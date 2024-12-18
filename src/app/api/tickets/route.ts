@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { TicketStatus } from "@/app/tickets/tickets.interface";
 import prisma from "@/lib/db";
 import { ticketSchema } from "@/lib/schemas/ticket.schema";
 import { NextRequest, NextResponse } from "next/server";
@@ -12,14 +13,22 @@ export async function GET(request: NextRequest) {
 
     const page = Number(searchParams.get("page") ?? 1);
     const limit = Number(searchParams.get("limit") ?? 2);
+    const status = searchParams.get("status") as TicketStatus | undefined;
 
-    const count = await prisma.ticket.count();
+    const count = await prisma.ticket.count({
+      where: {
+        status: status || undefined,
+      },
+    });
 
     const totalPages = Math.ceil(count / limit);
 
     const tickets = await prisma.ticket.findMany({
       skip: (page - 1) * limit,
       take: limit,
+      where: {
+        status: status || undefined,
+      },
     });
 
     return NextResponse.json({ tickets, totalPages });

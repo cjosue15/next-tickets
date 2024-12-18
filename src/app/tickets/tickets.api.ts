@@ -6,15 +6,23 @@ const URL = process.env.NEXT_PUBLIC_API_URL;
 export const getTickets = async ({
   page,
   limit,
+  status,
 }: {
   page: number;
   limit: number;
+  status?: string;
 }): Promise<{
   tickets: Ticket[];
   totalPages: number;
 }> => {
   try {
-    const response = await fetch(`${URL}/tickets?page=${page}&limit=${limit}`);
+    let url = `${URL}/tickets?page=${page}&limit=${limit}`;
+
+    if (status) {
+      url += `&status=${status}`;
+    }
+
+    const response = await fetch(url);
 
     const data = await response.json();
 
