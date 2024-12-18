@@ -3,9 +3,20 @@ import { LucidePlusCircle } from "lucide-react";
 import { TicketCard } from "@/components/ticket-card";
 import { getTickets } from "./tickets.api";
 import Link from "next/link";
+import { TicketPagination } from "@/components/ticket-pagination";
 
-export default async function TicketsPage() {
-  const { tickets } = await getTickets();
+interface Params {
+  searchParams?: Promise<{
+    page: number;
+    limit: number;
+  }>;
+}
+
+export default async function TicketsPage({ searchParams }: Params) {
+  const page = Number((await searchParams)?.page || 1);
+  const limit = Number((await searchParams)?.limit || 2);
+
+  const { tickets, totalPages } = await getTickets({ page, limit });
 
   return (
     <div className="max-w-screen-lg mx-auto p-8">
@@ -23,6 +34,14 @@ export default async function TicketsPage() {
         {tickets.map((ticket) => (
           <TicketCard key={ticket.id} ticket={ticket} />
         ))}
+      </div>
+
+      <div>
+        <TicketPagination
+          currentPage={page}
+          totalPages={totalPages}
+          limit={limit}
+        />
       </div>
     </div>
   );

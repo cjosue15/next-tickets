@@ -3,9 +3,18 @@ import { Ticket, TicketForm } from "./tickets.interface";
 
 const URL = process.env.NEXT_PUBLIC_API_URL;
 
-export const getTickets = async (): Promise<{ tickets: Ticket[] }> => {
+export const getTickets = async ({
+  page,
+  limit,
+}: {
+  page: number;
+  limit: number;
+}): Promise<{
+  tickets: Ticket[];
+  totalPages: number;
+}> => {
   try {
-    const response = await fetch(`${URL}/tickets`);
+    const response = await fetch(`${URL}/tickets?page=${page}&limit=${limit}`);
 
     const data = await response.json();
 
